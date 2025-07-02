@@ -1,8 +1,13 @@
 package com.shisir.webclient.service;
 
 import com.shisir.webclient.model.User;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -11,22 +16,21 @@ public class UserService {
     private final WebClient webClient;
 
     public UserService(WebClient.Builder builder) {
-        this.webClient = builder.baseUrl("https://jsonplaceholder.tyicode.com").build();
+        this.webClient = builder.baseUrl("https://jsonplaceholder.typicode.com").build();
     }
 
-    public List<User> fetchUsers() {
+    public Flux<User> fetchUsers() {
         return webClient.get()
                 .uri("/users")
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToFlux(User.class)
-                .collectList()
-                .block();   //blocking for simplicity
+                .bodyToFlux(User.class);
     }
-    public User fetchUserById(int id) {
+    public Mono<User> fetchUserById(int id) {
         return webClient.get()
                 .uri("/users/{id}", id)
+                .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToMono(User.class)
-                .block();
+                .bodyToMono(User.class);
     }
 }

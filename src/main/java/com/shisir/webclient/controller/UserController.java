@@ -2,13 +2,12 @@ package com.shisir.webclient.controller;
 
 import com.shisir.webclient.model.User;
 import com.shisir.webclient.service.UserService;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/users")
@@ -20,12 +19,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers(){
+    public Flux<User> getAllUsers(){
         return userService.fetchUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable int id){
+    public Mono<User> getUserById(@PathVariable int id){
         return userService.fetchUserById(id);
     }
 }
