@@ -1,8 +1,7 @@
 package com.shisir.webclient.service;
 
 import com.shisir.webclient.model.User;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -10,7 +9,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
-import java.util.List;
 
 @Service
 public class UserService {
@@ -25,7 +23,7 @@ public class UserService {
                 .uri("/users")
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .onStatus(status -> status.is4xxClientError(), response -> {
+                .onStatus(HttpStatusCode::is4xxClientError, response -> {
                     return Mono.error(new RuntimeException("Client error: " + response.statusCode()));
                 })
                 .onStatus(status -> status.is5xxServerError(), response -> {
@@ -47,7 +45,7 @@ public class UserService {
                 .onStatus(status -> status.is4xxClientError(), response ->
                     Mono.error(new RuntimeException("User not found"))
                 )
-                .onStatus(status -> status.is5xxServerError(), response ->
+                .onStatus(HttpStatusCode::is5xxServerError, response ->
                         Mono.error(new RuntimeException("API Server error!"))
                 )
                 .bodyToMono(User.class)
